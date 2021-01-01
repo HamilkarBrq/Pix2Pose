@@ -5,7 +5,7 @@ sys.path.append("./bop_toolkit")
 
 
 import math
-from plyfile import PlyData, PlyElement
+from plyfile import PlyData, PlyElement, PlyProperty
 import numpy as np
 import itertools
 from tools import bop_io
@@ -29,7 +29,19 @@ def get_xyz_max(fn_read):
 
 def convert_unique(fn_read,fn_write,center_x=True,center_y=True,center_z=True):
     plydata = PlyData.read(fn_read)
+      
+    
+    # ---------- Test Code start -----------
+    #print("Start Test code")
+    print(plydata.elements[0].data.dtype.fields)
+    #print(plydata.elements[0].ply_property('x'))
+    #i = 1
+   # for file in plydata.elements[0].data['red']:
+       # print(file)
+      #  i += 1
+      #  print("Das war klug Nr: ", i)
 
+    # ---------- Test Code over ---------
     #x,y,z : embbedding to RGB
     x_ct = np.mean(plydata.elements[0].data['x'])    
     if not(center_x):
@@ -46,16 +58,34 @@ def convert_unique(fn_read,fn_write,center_x=True,center_y=True,center_z=True):
         z_ct=0
     z_abs = np.max(np.abs(plydata.elements[0].data['z']-z_ct))    
     n_vert = plydata.elements[0].data['x'].shape[0]
-   
+
+        # --------- Test Code -------
+    if 'red' not in plydata.elements[0].data.dtype.fields:
+        print('Property Red not available. Adding Colors now')
+        vert = plydata['vertex']
+        a = np.empty(len(vert.data), vert.data.dtype.descr + [('red', 'u1'),('green', 'u1'), ('blue', 'u1')])
+        for name in vert.data.dtype.fields:
+            a[name] = vert[name]
+        vert = PlyElement.describe(a, 'vertex')
+            
+        #print(vert.properties, vert.data.dtype.names)
+        vert.properties = ()
+
+        vert.properties = plydata.elements[0].properties + (PlyProperty('red', 'uchar'), PlyProperty('green', 'uchar'), PlyProperty('blue', 'uchar'))
+        plydata = PlyData([vert, plydata.elements[1]], text=True)
+    print(plydata.elements[0].data.dtype.fields)
+    # -------- Test Code End -------
+    
     for i in range(n_vert):
         r=(plydata.elements[0].data['x'][i]-x_ct)/x_abs #-1 to 1
-        r = (r+1)/2 #0 to 2 -> 0 to 1        
+        r = (r+1)/2 #0 to 2 -> 0 to 1
         g=(plydata.elements[0].data['y'][i]-y_ct)/y_abs
         g = (g+1)/2
         b=(plydata.elements[0].data['z'][i]-z_ct)/z_abs
         b = (b+1)/2
         #if b> 1: b=1
         #if b<0: b=0
+
         plydata.elements[0].data['red'][i]=r*255
         plydata.elements[0].data['green'][i]=g*255
         plydata.elements[0].data['blue'][i]=b*255
@@ -74,6 +104,8 @@ cfg = inout.load_json(cfg_fn)
 dataset = sys.argv[2]
 bop_dir,source_dir,model_plys,model_info,model_ids,rgb_files,depth_files,mask_files,gts,cam_param_global = bop_io.get_dataset(cfg,dataset)
 
+#for elem in bop_io.get_dataset(cfg, dataset):
+#    print(elem)
 
 if not(os.path.exists(bop_dir + "/models_xyz/")):
     os.makedirs(bop_dir + "/models_xyz/")
@@ -92,6 +124,7 @@ for m_id,model_ply in enumerate(model_plys):
     #    print("keep origins of the object when it has symmetric poses")    
     fn_read = model_ply
     fname = model_ply.split("/")[-1]
+    #print(cfg)
     obj_id = int(fname[4:-4])
     fn_write = bop_dir + "/models_xyz/" + fname    
     x_abs,y_abs,z_abs,x_ct,y_ct,z_ct = convert_unique(fn_read,fn_write,center_x=center_x,center_y=center_y,center_z=center_z)
