@@ -4,7 +4,8 @@ import scipy.ndimage
 import tensorflow as tf
 
 import keras
-from keras import backend as K
+#from keras import backend as K
+from tensorflow.python.keras import backend as K
 from keras.initializers import glorot_normal,glorot_normal
 from keras.models import Model
 from keras.layers import Input,Conv2D,MaxPooling2D,UpSampling2D,Conv2DTranspose,ZeroPadding2D
