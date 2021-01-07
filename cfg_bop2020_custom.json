@@ -1,0 +1,16 @@
+{
+  "backbone":"resnet50",
+  "dataset_dir": "/home/users/rgg_js/pix2pose/bop/",
+  "dataset_names": ["tless"],
+  "detection_pipeline": "rcnn",
+  "path_to_detection_pipeline": "/home/users/rgg_js/pix2pose/Mask_RCNN/",
+  "detection_weight":"mask_rcnn_tless_0005.h5",  
+  "path_to_output": "/home/users/rgg_js/pix2pose/bop/bop_result" ,
+  "outlier_th":[0.2,0.3,0.35],
+  "inlier_th":0.2,
+  "norm_factor_fn":"norm_factor.json",
+  "score_type":2,
+  "task_type":2,
+  "cand_factor":2,
+  "test_target":"all_target_tless"  
+}
