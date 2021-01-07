@@ -1,6 +1,7 @@
 import keras
 from pix2pose_model import ae_model as ae
-from keras import backend as K
+#from keras import backend as K
+from tensorflow.python.keras import backend as K
 import numpy as np
 import cv2
 from skimage.transform import resize

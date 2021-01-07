@@ -109,7 +109,15 @@ def get_dataset(cfg,dataset,train=True,incl_param=False,eval=False,eval_model=Fa
         model_dir = bop_dataset_dir+"/models"+postfix_model
         model_dir  = "/home/kiru/media/hdd_linux/PoseDataset/hinterstoisser/model_eval"
         model_scale=0.001
-    
+    # Inserted test code (Hansousch)
+    elif(dataset=='lamp'):
+        bop_dataset_dir = os.path.join(bop_dir, "lamp")
+        test_dir = bop_dataset_dir+"/test"
+        train_dir = bop_dataset_dir+"/train"
+        model_dir = bop_dataset_dir+"/models"+postfix_model
+        model_scale = 0.001
+    # End of inserted code
+
     model_info = inout.load_json(os.path.join(model_dir,"models_info.json"))
     if(dataset=='ycbv'):
         cam_param_global = inout.load_cam_params(os.path.join(bop_dataset_dir,"camera_uw.json"))
@@ -170,4 +178,6 @@ def get_dataset(cfg,dataset,train=True,incl_param=False,eval=False,eval_model=Fa
     if(incl_param):
         return bop_dataset_dir,target_dir,model_plys,model_info,model_ids,rgb_files,depth_files,mask_files,gts,cam_param_global,params
     else:
+        #print(target_dir, model_plys, model_info, rgb_files)
+        print(target_dir)
         return bop_dataset_dir,target_dir,model_plys,model_info,model_ids,rgb_files,depth_files,mask_files,gts,cam_param_global

@@ -22,7 +22,7 @@ gpu_id = sys.argv[1]
 if(gpu_id=='-1'):
     gpu_id=''
 os.environ['CUDA_VISIBLE_DEVICES'] = gpu_id
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 from bop_toolkit_lib import inout
 from tools import bop_io
 from pix2pose_util import data_io as dataio
